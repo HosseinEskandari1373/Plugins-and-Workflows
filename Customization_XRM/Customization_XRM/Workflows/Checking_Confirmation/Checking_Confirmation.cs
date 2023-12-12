@@ -140,8 +140,9 @@ namespace Customization_XRM.Workflows.Checking_Confirmation
                 }
 
                 /*بررسی شروط*/
-                if (entity.GetAttributeValue<OptionSetValue>(ConfirmName.Get(localWorkflowExecution.executeContext)) != null && 
-                        (value == 100000000 || value == 100000001 || value == 100000002))
+                /*if (entity.GetAttributeValue<OptionSetValue>(ConfirmName.Get(localWorkflowExecution.executeContext)) != null && 
+                        (value == 100000000 || value == 100000001 || value == 100000002))*/
+                if(value != 0)
                 {
                     if (dateBool == false)
                     {
