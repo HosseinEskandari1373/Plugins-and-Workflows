@@ -194,6 +194,7 @@
     <Compile Include="Plugins\Practice\Contact\CreateNumberAuto.cs" />
     <Compile Include="Plugins\Practice\CreateContactNumberAuto.cs" />
     <Compile Include="Plugins\Practice\Settings\Checking_Relation_Read_From_Grid.cs" />
+    <Compile Include="Plugins\Read Old Quantitty Product\PL_CRM_ReadOldQuantityProduct.cs" />
     <Compile Include="Workflows\WF_XRM_ChangeOptionSetDetailForm\WF_XRM_ChangeOptionSetDetailForm.cs" />
     <Compile Include="Plugins\SCM\SCM_Ing_CreateNumber.cs" />
     <Compile Include="Plugins\Senario\Checking_Confirmation.cs" />

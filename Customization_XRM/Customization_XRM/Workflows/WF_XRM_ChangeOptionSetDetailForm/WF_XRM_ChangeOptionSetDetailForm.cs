@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 //namespaces for d365 interaction
-using CRM;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Workflow;
 using System.Activities;
 using Microsoft.Xrm.Sdk.Query;
-using System.Globalization;
 using Customization_XRM.Base.WorkFlowBase;
 using Customization_XRM.Base.Common_URL;
-using System.Threading;
-using Microsoft.Xrm.Sdk.Messages;
-using Microsoft.Xrm.Sdk.Metadata;
-using Customization_XRM.Base.PluginBase;
 
 namespace Customization_XRM.Plugins.Practice
 {

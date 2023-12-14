@@ -161,6 +161,7 @@ C:\Users\Administrator\source\repos\Git\Plugins and Workflows\Customization_XRM\
 C:\Users\Administrator\source\repos\Git\Plugins and Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.csproj.CopyComplete
 C:\Users\Administrator\source\repos\Git\Plugins and Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.dll
 C:\Users\Administrator\source\repos\Git\Plugins and Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.pdb
+C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Microsoft.Graph.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Customization_XRM.dll.config
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Customization_XRM.dll
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Customization_XRM.pdb
@@ -294,7 +295,6 @@ C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_X
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Tavis.UriTemplates.dll
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Azure.Core.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
-C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Microsoft.Graph.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Microsoft.Graph.Core.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Microsoft.IdentityModel.Abstractions.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\Microsoft.IdentityModel.JsonWebTokens.xml
