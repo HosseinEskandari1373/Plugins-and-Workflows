@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 //namespaces for d365 interaction
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Customization_XRM.Base.PluginBase;
-using System.Globalization;
 using CRM;
 
 namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
@@ -20,14 +17,14 @@ namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
 
         }
 
+        EntityReference FLookUpContactTarget;
+
         EntityReference FLookUpContact;
-        Entity RetriveFLookUpContact;       
+        Contact contact;
 
         EntityReference FLookUpAccount;
-        Entity RetriveFLookUpAccount;
+        Account account;
 
-        //EntityReference FLookUpContactProduct;
-        //Entity RetriveFLookUpContactProduct;
 
         protected override void ExecutePluginLogic(LocalPluginExecution localPluginExecution)
         {
@@ -47,42 +44,45 @@ namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
                         context.InputParameters["Target"] is Entity)
                 {
                     Entity entity = (Entity)context.InputParameters["Target"];
+                    OpportunityProduct opportunityProduct = crmService.Retrieve(OpportunityProduct.EntityLogicalName, entity.Id, new ColumnSet(true)) as OpportunityProduct;
+                    FLookUpContactTarget = opportunityProduct.ProductId;
 
                     //خواندن فرصت مربوط به محصول مورد نیاز 
-                    var FLookUpOpurMain = (EntityReference)(entity.Attributes["opportunityid"]);
-                    var RetriveFLookUpOpurMain = crmService.Retrieve(FLookUpOpurMain.LogicalName, FLookUpOpurMain.Id, new ColumnSet(true));
+                    var lookUpOpurMain = opportunityProduct.OpportunityId;
+                    Opportunity opportunity = crmService.Retrieve(lookUpOpurMain.LogicalName, lookUpOpurMain.Id, new ColumnSet(true)) as Opportunity;
 
-                    string contactID = "";
+                    Guid contactID;
                     string contactName = "";
 
-                    string accountID = "";
+                    Guid accountID;
                     string accountName = "";
 
-                    // خواندن آیدی شخص مربوط به فرصت
-                    if (RetriveFLookUpOpurMain.Attributes["parentcontactid"] != null)
-                    {
-                        FLookUpContact = (EntityReference)(RetriveFLookUpOpurMain.Attributes["parentcontactid"]);
-                        RetriveFLookUpContact = crmService.Retrieve(FLookUpContact.LogicalName, FLookUpContact.Id, new ColumnSet(true));
 
-                        contactID = RetriveFLookUpContact.Attributes["contactid"].ToString();
-                        contactName = RetriveFLookUpContact.Attributes["fullname"].ToString();
+                    // خواندن آیدی شخص مربوط به فرصت
+                    if (opportunity.ParentContactId != null)
+                    {
+                        FLookUpContact = opportunity.ParentContactId;
+                        contact = crmService.Retrieve(FLookUpContact.LogicalName, FLookUpContact.Id, new ColumnSet(true)) as Contact;
+
+                        contactID = contact.Id;
+                        contactName = contact.FullName;
                     }
                     else
                     {
-                        FLookUpAccount = (EntityReference)(RetriveFLookUpOpurMain.Attributes["parentaccountid"]);
-                        RetriveFLookUpAccount = crmService.Retrieve(FLookUpAccount.LogicalName, FLookUpAccount.Id, new ColumnSet(true));
+                        FLookUpAccount = opportunity.ParentAccountId;
+                        account = crmService.Retrieve(FLookUpAccount.LogicalName, FLookUpAccount.Id, new ColumnSet(true)) as Account;
 
-                        accountID = RetriveFLookUpAccount.Attributes["accountid"].ToString();
-                        accountName = RetriveFLookUpAccount.Attributes["name"].ToString();
+                        accountID = account.Id;
+                        accountName = account.Name;
                     }
 
-                    if (RetriveFLookUpContact != null)
+                    if (contact != null)
                     {
-                        var contact = crmService.Retrieve(RetriveFLookUpContact.LogicalName, RetriveFLookUpContact.Id, new ColumnSet(true));
+                        Contact readContact = crmService.Retrieve(contact.LogicalName, contact.Id, new ColumnSet(true)) as Contact;
 
-                        var contactOpurQuery = new QueryExpression
+                        QueryExpression contactOpurQuery = new QueryExpression
                         {
-                            EntityName = "opportunity",
+                            EntityName = Opportunity.EntityLogicalName,
                             ColumnSet = new ColumnSet(true),
                             Criteria = new FilterExpression
                             {
@@ -92,20 +92,20 @@ namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
                                     {
                                         AttributeName = "parentcontactid",
                                         Operator = ConditionOperator.Equal,
-                                        Values = {contact.Id}
+                                        Values = { readContact.Id}
                                     }
                                 }
                             }
                         };
 
-                        var contactOpurs = crmService.RetrieveMultiple(contactOpurQuery).Entities.ToList();
-                        List<Entity> listProductContact = new List<Entity>();
+                        IEnumerable<Opportunity> contactOpurs = crmService.RetrieveMultiple(contactOpurQuery).Entities.Cast<Opportunity>().ToList();
+                        List<OpportunityProduct> listProductContact = new List<OpportunityProduct>();
 
                         foreach (var item in contactOpurs)
-                        {                           
-                            var contactProductQuery = new QueryExpression
+                        {
+                            QueryExpression contactProductQuery = new QueryExpression
                             {
-                                EntityName = "opportunityproduct",
+                                EntityName = OpportunityProduct.EntityLogicalName,
                                 ColumnSet = new ColumnSet(true),
                                 Criteria = new FilterExpression
                                 {
@@ -121,18 +121,42 @@ namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
                                 }
                             };
 
-                            var contactProducts = crmService.RetrieveMultiple(contactProductQuery).Entities.ToList();
+                            List<OpportunityProduct> contactProducts = crmService.RetrieveMultiple(contactProductQuery).Entities.Cast<OpportunityProduct>().ToList();
+                            IEnumerable<OpportunityProduct> selectNewOldQuantity = contactProducts.Where(p => p.new_old_quantity != null && 
+                                                                                                            p.ProductId.Id == FLookUpContactTarget.Id);
 
-                            listProductContact.AddRange(contactProducts);
+                            if (selectNewOldQuantity.Any())
+                            {
+                                listProductContact.AddRange(selectNewOldQuantity);
+                            }
                         }
+
+                        var checkValue = listProductContact.Where(p => p.ProductId.Id == FLookUpContactTarget.Id).Select(p => p.new_old_quantity);
+                        int newOldQuantity;
+
+                        if (checkValue.Any())
+                        {
+                            IEnumerable<OpportunityProduct> selectedTargetProductFromList = listProductContact.Where(p => p.ProductId.Id == FLookUpContactTarget.Id);
+                            DateTime? maxCreatedOn = selectedTargetProductFromList.Max(p => p.CreatedOn);
+
+                            IEnumerable<OpportunityProduct> selectedResulrProduct = selectedTargetProductFromList.Where(p => p.CreatedOn == maxCreatedOn);
+                            OpportunityProduct selectOneRecord = selectedResulrProduct.FirstOrDefault();
+                            newOldQuantity = Convert.ToInt32(selectOneRecord.new_old_quantity);
+                        }
+                        else
+                        {
+                            newOldQuantity = 0;
+                        }
+
+                        crmService.Update(new OpportunityProduct { Id = entity.Id, new_old_quantity = newOldQuantity });
                     }
                     else
                     {
-                        var account = crmService.Retrieve(RetriveFLookUpAccount.LogicalName, RetriveFLookUpAccount.Id, new ColumnSet(true));
+                        Account readAccount = crmService.Retrieve(account.LogicalName, account.Id, new ColumnSet(true)) as Account;
 
-                        var accountOpurQuery = new QueryExpression
+                        QueryExpression accountOpurQuery = new QueryExpression
                         {
-                            EntityName = "opportunity",
+                            EntityName = Opportunity.EntityLogicalName,
                             ColumnSet = new ColumnSet(true),
                             Criteria = new FilterExpression
                             {
@@ -142,20 +166,20 @@ namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
                                     {
                                         AttributeName = "parentcontactid",
                                         Operator = ConditionOperator.Equal,
-                                        Values = { account.Id}
+                                        Values = { readAccount.Id}
                                     }
                                 }
                             }
                         };
 
-                        var accountOpurs = crmService.RetrieveMultiple(accountOpurQuery).Entities.ToList();
-                        List<Entity> listProductAccount = new List<Entity>();
+                        IEnumerable<Opportunity> accountOpurs = crmService.RetrieveMultiple(accountOpurQuery).Entities.Cast<Opportunity>().ToList();
+                        List<OpportunityProduct> listProductAccount = new List<OpportunityProduct>();
 
                         foreach (var item in accountOpurs)
                         {
-                            var accountProductQuery = new QueryExpression
+                            QueryExpression accountProductQuery = new QueryExpression
                             {
-                                EntityName = "opportunityproduct",
+                                EntityName = OpportunityProduct.EntityLogicalName,
                                 ColumnSet = new ColumnSet(true),
                                 Criteria = new FilterExpression
                                 {
@@ -171,10 +195,34 @@ namespace Customization_XRM.Plugins.Read_Old_Quantitty_Product
                                 }
                             };
 
-                            var accountProducts = crmService.RetrieveMultiple(accountProductQuery).Entities.ToList();
+                            List<OpportunityProduct> accountProducts = crmService.RetrieveMultiple(accountProductQuery).Entities.Cast<OpportunityProduct>().ToList();
+                            IEnumerable<OpportunityProduct> selectNewOldQuantity = accountProducts.Where(p => p.new_old_quantity != null &&
+                                                                                                            p.ProductId.Id == FLookUpContactTarget.Id);
 
-                            listProductAccount.AddRange(accountProducts);
+                            if (selectNewOldQuantity.Any())
+                            {
+                                listProductAccount.AddRange(selectNewOldQuantity);
+                            }
                         }
+
+                        var checkValue = listProductAccount.Where(p => p.ProductId.Id == FLookUpContactTarget.Id).Select(p => p.new_old_quantity);
+                        int newOldQuantity;
+
+                        if (checkValue.Any())
+                        {
+                            IEnumerable<OpportunityProduct> selectedTargetProductFromList = listProductAccount.Where(p => p.ProductId.Id == FLookUpContactTarget.Id);
+                            DateTime? maxCreatedOn = selectedTargetProductFromList.Max(p => p.CreatedOn);
+
+                            IEnumerable<OpportunityProduct> selectedResulrProduct = selectedTargetProductFromList.Where(p => p.CreatedOn == maxCreatedOn);
+                            OpportunityProduct selectOneRecord = selectedResulrProduct.FirstOrDefault();
+                            newOldQuantity = Convert.ToInt32(selectOneRecord.new_old_quantity);
+                        }
+                        else
+                        {
+                            newOldQuantity = 0;
+                        }
+
+                        crmService.Update(new OpportunityProduct { Id = entity.Id, new_old_quantity = newOldQuantity });
                     }
                 }
             }

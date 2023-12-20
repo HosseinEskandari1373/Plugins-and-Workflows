@@ -320,6 +320,7 @@ C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_X
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\System.Text.Encodings.Web.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\System.Text.Json.xml
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.csproj.AssemblyReference.cache
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.csproj.CoreCompileInputs.cache
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.csproj.CopyComplete
 C:\Users\Administrator\source\repos\Github\Plugins-and-Workflows\Customization_XRM\Customization_XRM\obj\Debug\Customization_XRM.dll
